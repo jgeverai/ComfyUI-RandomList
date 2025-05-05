@@ -14,6 +14,7 @@ class LoadImagesFromDirBatchRandom:
             "optional": {
                 "image_load_cap": ("INT", {"default": 0, "min": 0, "step": 1}),
                 "start_index": ("INT", {"default": 0, "min": -1, "max": 0xffffffffffffffff, "step": 1}),
+                "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "step": 1}),
                 "load_always": ("BOOLEAN", {"default": False, "label_on": "enabled", "label_off": "disabled"}),
             }
         }
@@ -30,7 +31,7 @@ class LoadImagesFromDirBatchRandom:
         else:
             return hash(frozenset(kwargs.items()))
 
-    def load_images(self, directory: str, image_load_cap: int = 0, start_index: int = 0, load_always=False):
+    def load_images(self, directory: str, image_load_cap: int = 0, start_index: int = 0, seed: int=0, load_always=False):
         if not os.path.isdir(directory):
             raise FileNotFoundError(f"Directory '{directory}' cannot be found.")
         
@@ -48,6 +49,7 @@ class LoadImagesFromDirBatchRandom:
 
         # Apply random sampling if image_load_cap > 0
         if image_load_cap > 0 and image_load_cap < len(dir_files):
+            random.seed(seed)
             dir_files = random.sample(dir_files, image_load_cap)
 
         dir_files = [os.path.join(directory, f) for f in dir_files]
